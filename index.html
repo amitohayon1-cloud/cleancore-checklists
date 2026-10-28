@@ -28,6 +28,9 @@
       <p class="sub">צ'ק ליסט ציוד לפי מלאכה</p>
     </header>
     <ul id="trade-list" class="trade-list"></ul>
+    <button type="button" id="new-trade-btn" class="add-row">
+      <span class="plus" aria-hidden="true">+</span> מלאכה חדשה
+    </button>
     <p id="home-error" class="error" hidden></p>
     <a href="install.html" id="install-link" class="install-link">📲 התקנה על מסך הבית</a>
     <footer class="home-footer"><span id="version"></span></footer>
@@ -41,6 +44,9 @@
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
         </button>
         <h1 id="trade-title"></h1>
+        <button type="button" id="edit-trade-btn" class="icon-btn edit-trade" aria-label="עריכת המלאכה" hidden>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4zM13.5 6.5l4 4"/></svg>
+        </button>
       </div>
       <div class="progress" aria-live="polite">
         <div class="progress-text" id="progress-text"></div>
@@ -83,6 +89,39 @@
       <div class="sheet-actions">
         <button type="button" class="btn btn-secondary" data-close>ביטול</button>
         <button type="button" id="reset-confirm" class="btn btn-danger">כן, לאפס</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- חלון מלאכה חדשה / עריכת מלאכה -->
+  <div id="trade-dialog" class="overlay" hidden>
+    <div class="sheet sheet-form" role="dialog" aria-modal="true" aria-labelledby="trade-dialog-title">
+      <h2 id="trade-dialog-title">מלאכה חדשה</h2>
+      <label class="field">
+        <span>שם המלאכה</span>
+        <input type="text" id="t-name" autocomplete="off" enterkeyhint="next">
+      </label>
+      <label class="field">
+        <span>סעיפים – סעיף בכל שורה</span>
+        <textarea id="t-items" rows="9" placeholder="שואב אבק + צנרת&#10;סולם 5 שלבים&#10;כפפות חד&quot;פ"></textarea>
+      </label>
+      <p class="field-note">אפשר להדביק רשימה מוואטסאפ. מספור בתחילת שורה (1. / -) יוסר אוטומטית.</p>
+      <p id="t-error" class="error" hidden></p>
+      <div class="sheet-actions">
+        <button type="button" class="btn btn-secondary" data-close>ביטול</button>
+        <button type="button" id="t-save" class="btn btn-primary">שמור</button>
+      </div>
+      <div id="t-extra" class="sheet-extra" hidden>
+        <p class="field-note">המלאכה שמורה רק בטלפון הזה. כדי שתופיע אצל כולם, שלח אותה לעדכון.</p>
+        <button type="button" id="t-share" class="btn btn-secondary btn-block">שלח לעדכון כללי</button>
+        <button type="button" id="t-delete" class="btn-link danger-link">מחק את המלאכה</button>
+        <div id="t-delete-confirm" class="confirm-row" hidden>
+          <span>למחוק את המלאכה ואת הטיוטה שלה?</span>
+          <div class="sheet-actions">
+            <button type="button" id="t-delete-no" class="btn btn-secondary">לא</button>
+            <button type="button" id="t-delete-yes" class="btn btn-danger">כן, למחוק</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>

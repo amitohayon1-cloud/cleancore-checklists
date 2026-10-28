@@ -311,3 +311,24 @@ input:focus-visible, button:focus-visible { outline: 3px solid var(--primary); o
 .step-text { font-size: 22px; }
 .steps li .step-text:not(:only-child) { font-size: 15px; }
 .hint { margin-top: 14px !important; padding: 10px 12px; border-radius: 10px; background: var(--notice-bg); color: var(--notice-text); font-size: 16px; }
+
+/* מלאכה חדשה / עריכה */
+#new-trade-btn { margin-top: 12px; }
+.topbar-row h1 { flex: 1; }
+.sheet-form { text-align: start; }
+.sheet-form h2 { text-align: center; }
+.sheet-form .field { margin-bottom: 12px; }
+.field textarea {
+  width: 100%; min-height: 200px;
+  padding: 10px 14px;
+  background: var(--bg);
+  border: 1.5px solid var(--border); border-radius: 12px;
+  font-size: 18px; line-height: 1.5;
+  resize: vertical;
+}
+.field-note { font-size: 15px; color: var(--muted); margin: -4px 0 12px !important; }
+.sheet-extra { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border); text-align: center; }
+.sheet-extra .btn-block { margin-bottom: 6px; }
+.danger-link { color: var(--danger); }
+.confirm-row { margin-top: 8px; padding: 12px; border-radius: 12px; background: var(--bg); }
+.confirm-row span { display: block; margin-bottom: 10px; font-weight: 700; }

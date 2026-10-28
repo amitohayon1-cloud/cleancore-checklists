@@ -3,8 +3,11 @@
 
   var COMPANY = "קלין קור";
   var DRAFT_PREFIX = "cc-draft-";
+  var MY_TRADES_KEY = "cc-my-trades"; // מלאכות שנוספו בטלפון הזה בלבד
 
-  var trades = [];
+  var trades = []; // מלאכות מ-data/trades.json
+  var myTrades = []; // מלאכות שהמשתמש הוסיף בטלפון הזה
+  var editingTrade = null; // מלאכה שנערכת בחלון המלאכה (null = מלאכה חדשה)
   var trade = null; // המלאכה הפתוחה
   var draft = null; // הטיוטה שלה
   var pdfResult = null; // { blob, fileName }
@@ -63,12 +66,105 @@
     try { return !!localStorage.getItem(DRAFT_PREFIX + t.id); } catch (e) { return false; }
   }
 
+  // ---------- מלאכות שלי ----------
+
+  function loadMyTrades() {
+    try {
+      var d = JSON.parse(localStorage.getItem(MY_TRADES_KEY) || "[]");
+      return Array.isArray(d) ? d : [];
+    } catch (e) { return []; }
+  }
+
+  function saveMyTrades() {
+    try { localStorage.setItem(MY_TRADES_KEY, JSON.stringify(myTrades)); } catch (e) { /* ignore */ }
+  }
+
+  function allTrades() { return trades.concat(myTrades); }
+
+  // סעיף בכל שורה; מסיר רק מספור ותבליטים בתחילת שורה (כמו "1." או "-" מרשימה שהודבקה)
+  function parseItems(text) {
+    return text.split(/\r?\n/)
+      .map(function (l) { return l.replace(/^\s*(?:\d+\s*[.)]|[-*•▪●])\s*/, "").trim(); })
+      .filter(Boolean)
+      .map(function (name) { return { name: name }; });
+  }
+
+  function openTradeDialog(t) {
+    editingTrade = t || null;
+    $("trade-dialog-title").textContent = t ? "עריכת מלאכה" : "מלאכה חדשה";
+    $("t-name").value = t ? t.name : "";
+    $("t-items").value = t ? t.items.map(function (i) { return i.name; }).join("\n") : "";
+    $("t-error").hidden = true;
+    $("t-extra").hidden = !t;
+    $("t-delete-confirm").hidden = true;
+    openOverlay("trade-dialog");
+    if (!t) $("t-name").focus();
+  }
+
+  function saveTradeDialog() {
+    var name = $("t-name").value.trim();
+    var items = parseItems($("t-items").value);
+    var err = !name ? "צריך לכתוב שם למלאכה." : !items.length ? "צריך לכתוב לפחות סעיף אחד." : "";
+    $("t-error").textContent = err;
+    $("t-error").hidden = !err;
+    if (err) return;
+    var t = editingTrade;
+    if (t) {
+      t.name = name;
+      t.items = items;
+      if (hasDraft(t)) mergeDraftWithBase(t);
+    } else {
+      t = { id: "my-" + uid(), name: name, items: items, mine: true };
+      myTrades.push(t);
+    }
+    saveMyTrades();
+    closeOverlays();
+    if (editingTrade) openTrade(t);
+    else { cameFromHome = true; location.hash = "#/" + encodeURIComponent(t.id); }
+  }
+
+  // אחרי עריכת מלאכה שלי: הטיוטה עוברת לרשימה החדשה, ושומרת סימון וכמות של סעיפים
+  // באותו שם, את שם הפרויקט, התאריך והסעיפים שנוספו לעבודה הנוכחית
+  function mergeDraftWithBase(t) {
+    var old = loadDraft(t);
+    var fresh = freshDraft(t);
+    fresh.project = old.project;
+    fresh.date = old.date;
+    fresh.items.forEach(function (it) {
+      var prev = old.items.find(function (o) { return !o.custom && o.name === it.name; });
+      if (prev) { it.checked = prev.checked; it.qty = prev.qty; }
+    });
+    old.items.forEach(function (o) { if (o.custom) fresh.items.push(o); });
+    try { localStorage.setItem(DRAFT_PREFIX + t.id, JSON.stringify(fresh)); } catch (e) { /* ignore */ }
+  }
+
+  function deleteMyTrade() {
+    var t = editingTrade;
+    myTrades = myTrades.filter(function (x) { return x !== t; });
+    saveMyTrades();
+    try { localStorage.removeItem(DRAFT_PREFIX + t.id); } catch (e) { /* ignore */ }
+    closeOverlays();
+    location.hash = "";
+  }
+
+  // שליחת המלאכה (וואטסאפ וכו') כדי להוסיף אותה לרשימות הקבועות של כולם
+  function shareTradeText() {
+    var t = editingTrade;
+    var text = "מלאכה חדשה לצ'ק ליסט: " + t.name + "\n" +
+      t.items.map(function (i, n) { return (n + 1) + ". " + i.name; }).join("\n");
+    if (navigator.share) {
+      navigator.share({ text: text }).catch(function () {});
+    } else if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(function () { showToast("הרשימה הועתקה – אפשר להדביק בוואטסאפ"); });
+    }
+  }
+
   // ---------- מסך ראשי ----------
 
   function renderHome() {
     var list = $("trade-list");
     list.innerHTML = "";
-    trades.forEach(function (t) {
+    allTrades().forEach(function (t) {
       var li = document.createElement("li");
       var b = document.createElement("button");
       b.type = "button";
@@ -76,7 +172,7 @@
       label.textContent = t.name;
       var meta = document.createElement("span");
       meta.className = "meta";
-      meta.textContent = t.items.length + " פריטים" + (hasDraft(t) ? " · יש טיוטה פתוחה" : "");
+      meta.textContent = (t.mine ? "מלאכה שלי · " : "") + t.items.length + " פריטים" + (hasDraft(t) ? " · יש טיוטה פתוחה" : "");
       label.appendChild(meta);
       b.appendChild(label);
       b.insertAdjacentHTML("beforeend", ICON_CHEV);
@@ -92,6 +188,7 @@
     trade = t;
     draft = loadDraft(t);
     $("trade-title").textContent = t.name;
+    $("edit-trade-btn").hidden = !t.mine;
     $("f-project").value = draft.project || "";
     $("f-date").value = draft.date || "";
     $("base-changed").hidden = draft.sig === baseSig(t);
@@ -329,7 +426,7 @@
     closeOverlays();
     $("toast").hidden = true;
     var m = location.hash.match(/^#\/(.+)$/);
-    var t = m && trades.find(function (x) { return x.id === decodeURIComponent(m[1]); });
+    var t = m && allTrades().find(function (x) { return x.id === decodeURIComponent(m[1]); });
     if (t) openTrade(t);
     else {
       trade = null;
@@ -349,6 +446,13 @@
     $("f-project").addEventListener("input", function (e) { draft.project = e.target.value; saveDraft(); });
     $("f-date").addEventListener("change", function (e) { draft.date = e.target.value; saveDraft(); });
     $("add-item").addEventListener("click", addItem);
+    $("new-trade-btn").addEventListener("click", function () { openTradeDialog(null); });
+    $("edit-trade-btn").addEventListener("click", function () { openTradeDialog(trade); });
+    $("t-save").addEventListener("click", saveTradeDialog);
+    $("t-share").addEventListener("click", shareTradeText);
+    $("t-delete").addEventListener("click", function () { $("t-delete-confirm").hidden = false; });
+    $("t-delete-no").addEventListener("click", function () { $("t-delete-confirm").hidden = true; });
+    $("t-delete-yes").addEventListener("click", deleteMyTrade);
     $("reset-btn").addEventListener("click", function () { openOverlay("reset-dialog"); });
     $("reset-confirm").addEventListener("click", function () { closeOverlays(); resetDraft(); });
     $("export-btn").addEventListener("click", exportPdf);
@@ -403,6 +507,7 @@
     .then(function (r) { return r.json(); })
     .then(function (json) {
       trades = json.trades || [];
+      myTrades = loadMyTrades();
       route();
       showVersion();
     })

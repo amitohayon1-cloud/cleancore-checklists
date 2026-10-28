@@ -3,7 +3,7 @@
  * בכל עדכון של קובץ כלשהו באפליקציה (כולל data/trades.json) חובה להעלות
  * את VERSION באחד, כדי שהטלפונים יורידו את הגרסה החדשה.
  */
-var VERSION = "1";
+var VERSION = "2";
 var CACHE = "cc-checklists-" + VERSION;
 
 var FILES = [
