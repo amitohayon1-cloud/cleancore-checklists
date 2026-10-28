@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>התקנה – קלין קור צ'ק ליסט</title>
+  <meta name="theme-color" content="#0b5cab" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#101418" media="(prefers-color-scheme: dark)">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="צ'ק ליסט">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <main class="screen install">
+    <header class="install-head">
+      <img src="icons/icon-192.png" alt="" width="96" height="96" class="app-icon">
+      <h1>צ'ק ליסט ציוד – קלין קור</h1>
+      <p class="sub">התקנה על מסך הבית: נפתח כמו אפליקציה ועובד גם בלי אינטרנט.</p>
+    </header>
+
+    <!-- כבר מותקן / נפתח מתוך האפליקציה -->
+    <section id="s-installed" class="card" hidden>
+      <h2>האפליקציה מותקנת ✓</h2>
+      <p>אפשר לפתוח אותה מהאייקון "צ'ק ליסט" במסך הבית.</p>
+    </section>
+
+    <!-- אנדרואיד עם כפתור התקנה -->
+    <section id="s-prompt" class="card" hidden>
+      <button type="button" id="install-btn" class="btn btn-primary btn-block">התקן על מסך הבית</button>
+    </section>
+
+    <!-- אייפון -->
+    <section id="s-ios" class="card" hidden>
+      <h2>התקנה באייפון</h2>
+      <ol class="steps">
+        <li>
+          <span class="step-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7.5 7.5L12 3l4.5 4.5M6 11H5v10h14V11h-1"/></svg></span>
+          <span>לוחצים על כפתור <b>השיתוף</b> (ריבוע עם חץ למעלה). בספארי הוא בתחתית המסך או ליד שורת הכתובת.</span>
+        </li>
+        <li>
+          <span class="step-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M12 8.5v7M8.5 12h7"/></svg></span>
+          <span>גוללים למטה ובוחרים <b>"הוסף למסך הבית"</b>.</span>
+        </li>
+        <li>
+          <span class="step-icon step-text">הוסף</span>
+          <span>לוחצים <b>"הוסף"</b> בפינה העליונה. האייקון "צ'ק ליסט" יופיע במסך הבית.</span>
+        </li>
+      </ol>
+      <p class="hint">אם הלינק נפתח מתוך וואטסאפ, קודם פותחים אותו בספארי (תפריט ⋯ ← "פתח בספארי").</p>
+    </section>
+
+    <!-- אנדרואיד בלי כפתור (דפדפן אחר / וואטסאפ / כבר הותקן) -->
+    <section id="s-android" class="card" hidden>
+      <h2>התקנה באנדרואיד</h2>
+      <ol class="steps">
+        <li>
+          <span class="step-icon step-text">⋮</span>
+          <span>פותחים את <b>תפריט הדפדפן</b> (שלוש נקודות למעלה) ב-Chrome.</span>
+        </li>
+        <li>
+          <span class="step-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M12 8.5v7M8.5 12h7"/></svg></span>
+          <span>בוחרים <b>"התקנת אפליקציה"</b> או <b>"הוספה למסך הבית"</b>, ומאשרים.</span>
+        </li>
+      </ol>
+      <p class="hint">אם הלינק נפתח מתוך וואטסאפ, קודם פותחים אותו ב-Chrome (תפריט ⋮ ← "פתח ב-Chrome").</p>
+    </section>
+
+    <!-- מחשב -->
+    <section id="s-desktop" class="card" hidden>
+      <h2>במחשב</h2>
+      <p>האפליקציה מיועדת לטלפון. כדי להתקין, פותחים את הלינק הזה בטלפון. במחשב אפשר פשוט להמשיך למילוי.</p>
+    </section>
+
+    <a href="./" class="btn btn-secondary btn-block continue">המשך למילוי בלי התקנה</a>
+  </main>
+
+  <script src="js/install.js"></script>
+</body>
+</html>

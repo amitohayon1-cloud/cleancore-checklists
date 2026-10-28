@@ -397,6 +397,8 @@
 
   bind();
   registerSW();
+  // בתוך האפליקציה המותקנת אין צורך בלינק ההתקנה
+  if (window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true) $("install-link").hidden = true;
   fetch("data/trades.json")
     .then(function (r) { return r.json(); })
     .then(function (json) {

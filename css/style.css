@@ -278,3 +278,36 @@ input:focus-visible, button:focus-visible { outline: 3px solid var(--primary); o
 }
 .toast .btn-link { color: var(--bg); text-decoration: underline; min-height: 44px; }
 .error { color: var(--danger); font-weight: 700; }
+
+/* לינק ודף התקנה */
+.install-link {
+  display: block; margin-top: 20px; padding: 14px;
+  text-align: center; font-weight: 700; color: var(--primary);
+  text-decoration: none;
+  border: 1.5px solid var(--border); border-radius: 14px;
+}
+.install-head { text-align: center; padding: calc(24px + env(safe-area-inset-top)) 0 8px; }
+.install-head h1 { margin: 12px 0 4px; font-size: 24px; }
+.install-head .sub { margin: 0; color: var(--muted); }
+.app-icon { border-radius: 22px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+.card {
+  margin-top: 16px; padding: 18px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border); border-radius: 16px;
+}
+.card h2 { margin: 0 0 10px; font-size: 20px; }
+.card p { margin: 0; }
+.btn-block { display: flex; align-items: center; justify-content: center; width: 100%; text-decoration: none; }
+.continue { margin-top: 16px; }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; counter-reset: step; }
+.steps li { display: flex; align-items: center; gap: 12px; }
+.step-icon {
+  flex: none; width: 48px; height: 48px;
+  display: grid; place-items: center;
+  border-radius: 12px; background: var(--bg); border: 1px solid var(--border);
+  color: var(--primary); font-weight: 700; font-size: 16px;
+}
+.step-icon svg { width: 28px; height: 28px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.step-text { font-size: 22px; }
+.steps li .step-text:not(:only-child) { font-size: 15px; }
+.hint { margin-top: 14px !important; padding: 10px 12px; border-radius: 10px; background: var(--notice-bg); color: var(--notice-text); font-size: 16px; }

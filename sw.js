@@ -9,6 +9,8 @@ var CACHE = "cc-checklists-" + VERSION;
 var FILES = [
   "./",
   "index.html",
+  "install.html",
+  "js/install.js",
   "css/style.css",
   "js/app.js",
   "js/pdf-template.js",
@@ -55,7 +57,12 @@ self.addEventListener("fetch", function (event) {
   if (new URL(req.url).origin !== self.location.origin) return;
 
   if (req.mode === "navigate") {
-    event.respondWith(caches.match("index.html").then(function (r) { return r || fetch(req); }));
+    // install.html מוחזר כמו שהוא; כל דף אחר (כולל "./") מקבל את index.html
+    event.respondWith(
+      caches.match(req, { ignoreSearch: true })
+        .then(function (r) { return r || caches.match("index.html"); })
+        .then(function (r) { return r || fetch(req); })
+    );
     return;
   }
   event.respondWith(
