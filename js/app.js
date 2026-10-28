@@ -39,7 +39,7 @@
       project: "",
       date: todayIso(),
       items: t.items.map(function (it) {
-        return { id: uid(), name: it.name, qty: it.qty != null ? String(it.qty) : "", checked: false, custom: false, editable: !!it.editable };
+        return { id: uid(), name: it.name, qty: it.qty != null ? String(it.qty) : "", checked: false, custom: false };
       }),
     };
   }
@@ -97,6 +97,7 @@
     $("base-changed").hidden = draft.sig === baseSig(t);
     renderItems();
     showScreen("checklist");
+    $("items").querySelectorAll("textarea.name").forEach(autoSize); // אחרי שהמסך גלוי
     window.scrollTo(0, 0);
   }
 
@@ -104,6 +105,7 @@
     var ul = $("items");
     ul.innerHTML = "";
     draft.items.forEach(function (it) { ul.appendChild(itemRow(it)); });
+    ul.querySelectorAll("textarea.name").forEach(autoSize);
     updateProgress();
   }
 
@@ -130,26 +132,24 @@
       updateProgress();
     });
 
-    var name;
-    if (it.custom || it.editable) {
-      name = document.createElement("input");
-      name.type = "text";
-      name.className = "name name-input";
-      name.placeholder = "שם הסעיף";
-      name.value = it.name;
-      name.enterKeyHint = "done";
-      name.addEventListener("input", function () {
-        it.name = name.value;
-        cb.setAttribute("aria-label", it.name || "סעיף");
-        saveDraft();
-      });
-    } else {
-      name = document.createElement("span");
-      name.className = "name";
-      name.textContent = it.name;
-      // לחיצה על שם הפריט מסמנת אותו
-      name.addEventListener("click", function () { cb.click(); });
-    }
+    // כל שם סעיף ניתן לעריכה; textarea כדי ששמות ארוכים יירדו שורה
+    var name = document.createElement("textarea");
+    name.className = "name";
+    name.rows = 1;
+    name.placeholder = "שם הסעיף";
+    name.value = it.name;
+    name.enterKeyHint = "done";
+    name.setAttribute("aria-label", "שם הסעיף");
+    name.addEventListener("input", function () {
+      if (/\n/.test(name.value)) name.value = name.value.replace(/\n/g, " ");
+      it.name = name.value;
+      cb.setAttribute("aria-label", it.name || "סעיף");
+      autoSize(name);
+      saveDraft();
+    });
+    name.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") { e.preventDefault(); name.blur(); }
+    });
 
     var qty = document.createElement("input");
     qty.type = "text";
@@ -180,6 +180,11 @@
     return li;
   }
 
+  function autoSize(el) {
+    el.style.height = "auto";
+    el.style.height = el.scrollHeight + "px";
+  }
+
   function updateProgress() {
     var total = draft.items.length;
     var done = draft.items.filter(function (i) { return i.checked; }).length;
@@ -194,7 +199,7 @@
     var row = itemRow(it);
     $("items").appendChild(row);
     updateProgress();
-    var input = row.querySelector(".name-input");
+    var input = row.querySelector(".name");
     input.focus();
     row.scrollIntoView({ block: "center", behavior: "smooth" });
   }
